@@ -4,7 +4,6 @@ Authentication [reference](https://community.cisco.com/t5/networking-blogs/authe
 
 and also [here](https://developer.cisco.com/docs/dna-center/authentication-api/)
 
-
 ## Authentication
 
 Need to create a local `.env` file with:

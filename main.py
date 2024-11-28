@@ -68,4 +68,7 @@ while True:
         offset += limit
 
 # Print the list of all network devices
-print(json.dumps(all_devices, indent=2))
+# One a t the time in a compact way
+for item in all_devices:
+    event=json.dumps(item, indent=None, separators=(',', ':'))
+    print(f"{event}\n")
