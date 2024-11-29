@@ -13,4 +13,8 @@ Need to create a local `.env` file with:
 DNAC_HOST = <IP address>
 DNAC_USERNAME = <some username having enough READ privileges>
 DNAC_PASSWORD = <and its password>
+# Splunk Credentials
+SPLUNK_USERNAME = <username>>
+SPLUNK_PASSWORD = <password>
+SPLUNK_HEC_TOKEN = <HEC token>
 ````
