@@ -5,7 +5,9 @@ import sys
 from dotenv import load_dotenv
 from requests.auth import HTTPBasicAuth
 from urllib3.exceptions import InsecureRequestWarning
- 
+
+from splunk_hec import SplunkHEC
+
 # Suppress the warnings from urllib3
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
@@ -48,7 +50,7 @@ while True:
     # Construct the API request URL with pagination parameters
     url = f"https://{DNAC_HOST}{API_ENDPOINT}?offset={offset}&limit={limit}"
     # Make the API request
-    with requests.get(url, headers=headers,data=payload, verify=False) as response:
+    with requests.get(url, headers=headers, data=payload, verify=False) as response:
         # Check the response status code
         # This will raise an exception if the status code is not in the 2xx range.
         response.raise_for_status()
@@ -59,7 +61,6 @@ while True:
         # Append the retrieved devices to the list
         all_devices.extend(data["response"])
 
-
         # Check if there are more devices to retrieve
         if len(data["response"]) < limit:
             break
@@ -69,6 +70,10 @@ while True:
 
 # Print the list of all network devices
 # One a t the time in a compact way
+
+splunk_hec = SplunkHEC(splunk_host="localhost", splunk_port="8088")
+
+
 for item in all_devices:
-    event=json.dumps(item, indent=None, separators=(',', ':'))
-    print(f"{event}\n")
+    event = json.dumps(item, indent=None, separators=(",", ":"))
+    splunk_hec.send_event(event, source=DNAC_HOST, sourcetype="cisco:dnac")
