@@ -1,79 +1,41 @@
 import json
-import os
-import requests
-import sys
-from dotenv import load_dotenv
-from requests.auth import HTTPBasicAuth
-from urllib3.exceptions import InsecureRequestWarning
-
+from dnac_client import DNACClient, DNAC_HOST
 from splunk_hec import SplunkHEC
 
-# Suppress the warnings from urllib3
-requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+
+def main():
+    # Print the list of all network devices
+    # One a t the time in a compact way
+
+    # Create a HEC Connection
+    splunk_hec = SplunkHEC(splunk_host="localhost", splunk_port="8088")
+
+    # Call the individual APIs and send the results to Splunk
+    device_health_client = DNACClient("/dna/intent/api/v1/device-health")
+    device_health_data = device_health_client.get_data()
+
+    for item in device_health_data:
+        event = json.dumps(item, indent=None, separators=(",", ":"))
+        splunk_hec.send_event(
+            event, source=DNAC_HOST, sourcetype="cisco:dnac:device_health"
+        )
+
+    client_health_client = DNACClient("/dna/intent/api/v1/client-health")
+    client_health_data = client_health_client.get_data()
+    for item in client_health_data:
+        event = json.dumps(item, indent=None, separators=(",", ":"))
+        splunk_hec.send_event(
+            event, source=DNAC_HOST, sourcetype="cisco:dnac:client_health"
+        )
+
+    network_device_client = DNACClient("/dna/intent/api/v1/network-device")
+    network_device_data = network_device_client.get_data()
+    for item in network_device_data:
+        event = json.dumps(item, indent=None, separators=(",", ":"))
+        splunk_hec.send_event(
+            event, source=DNAC_HOST, sourcetype="cisco:dnac:network_devices"
+        )
 
 
-# Load environment variables from the .env file (if present)
-load_dotenv()
-# DNAC connection details
-DNAC_HOST = os.getenv("DNAC_HOST", "localhost")
-DNAC_USERNAME = os.getenv("DNAC_USERNAME", "user")
-DNAC_PASSWORD = os.getenv("DNAC_PASSWORD")
-
-
-# Authentication
-auth = (DNAC_USERNAME, DNAC_PASSWORD)
-AUTH_API = "/dna/system/api/v1/auth/token"
-url = f"https://{DNAC_HOST}{AUTH_API}"
-
-
-headers = {"content-type": "application/json"}
-resp = requests.post(
-    url,
-    auth=HTTPBasicAuth(username=DNAC_USERNAME, password=DNAC_PASSWORD),
-    headers=headers,
-    verify=False,
-)
-token = resp.json()["Token"]
-
-# API endpoint
-API_ENDPOINT = "/dna/intent/api/v1/device-health"
-
-# Initialize variables
-headers["x-auth-token"] = token
-payload = None
-offset = 1
-limit = 10
-all_devices = []
-
-# Retrieve network devices using pagination
-while True:
-    # Construct the API request URL with pagination parameters
-    url = f"https://{DNAC_HOST}{API_ENDPOINT}?offset={offset}&limit={limit}"
-    # Make the API request
-    with requests.get(url, headers=headers, data=payload, verify=False) as response:
-        # Check the response status code
-        # This will raise an exception if the status code is not in the 2xx range.
-        response.raise_for_status()
-
-        # Parse the JSON response
-        data = response.json()
-
-        # Append the retrieved devices to the list
-        all_devices.extend(data["response"])
-
-        # Check if there are more devices to retrieve
-        if len(data["response"]) < limit:
-            break
-
-        # Update the offset for the next page
-        offset += limit
-
-# Print the list of all network devices
-# One a t the time in a compact way
-
-splunk_hec = SplunkHEC(splunk_host="localhost", splunk_port="8088")
-
-
-for item in all_devices:
-    event = json.dumps(item, indent=None, separators=(",", ":"))
-    splunk_hec.send_event(event, source=DNAC_HOST, sourcetype="cisco:dnac")
+if __name__ == "__main__":
+    main()

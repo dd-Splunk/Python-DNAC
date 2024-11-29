@@ -1,10 +1,18 @@
 import os
+from dotenv import load_dotenv
 import requests
 import time
+from urllib3.exceptions import InsecureRequestWarning
+
+# Suppress the warnings from urllib3
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+
+load_dotenv()
 
 
 class SplunkHEC:
     def __init__(self, splunk_host, splunk_port):
+
         self.splunk_host = splunk_host
         self.splunk_port = splunk_port
         self.splunk_username = os.getenv("SPLUNK_USERNAME")
@@ -44,8 +52,8 @@ class SplunkHEC:
 if __name__ == "__main__":
     splunk_hec = SplunkHEC(splunk_host="localhost", splunk_port="8088")
     event_data = {
-        "message": "This is a test event",
-        "severity": "info",
+        "event": "something happened",
+        "details": {"severity": "INFO", "category": ["foo", "bar"]},
     }
-    print(splunk_hec.hec_token)
+
     splunk_hec.send_event(event_data, source="python-app", sourcetype="python-app-logs")
