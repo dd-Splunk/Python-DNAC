@@ -19,7 +19,7 @@ class SplunkHEC:
         self.splunk_password = os.getenv("SPLUNK_PASSWORD")
         self.hec_token = os.getenv("SPLUNK_HEC_TOKEN")
 
-    def send_event(self, event_data, index="main", source=None, sourcetype=None):
+    def send_event(self, event_data: dict, index="main", source=None, sourcetype=None):
         """
         Sends an event to the Splunk HTTP Event Collector.
 
@@ -34,6 +34,7 @@ class SplunkHEC:
             "Authorization": f"Splunk {self.hec_token}",
             "Content-Type": "application/json",
         }
+
         data = {"event": event_data, "index": index, "time": int(time.time())}
 
         if source:
@@ -48,6 +49,26 @@ class SplunkHEC:
         except requests.exceptions.RequestException as e:
             print(f"Error sending event to Splunk: {e}")
 
+    def send_events_batch(
+        self, events_data, index="main", source=None, sourcetype=None
+    ):
+        """
+        Sends an event or a list of events to the Splunk HTTP Event Collector.
+
+        Args:
+            events_data (dict or list): The events data to be sent.
+            index (str): The Splunk index to send the event to (default is 'main').
+            source (str): The source of the event (optional).
+            sourcetype (str): The source type of the event (optional).
+        """
+        if isinstance(events_data, dict):
+            # If events_data is a single dictionary, wrap it in a list
+            events_data = [events_data]
+
+        for event in events_data:
+            # Send individual events
+            self.send_event(event, index, source, sourcetype)
+
 
 if __name__ == "__main__":
     splunk_hec = SplunkHEC(splunk_host="localhost", splunk_port="8088")
@@ -56,4 +77,6 @@ if __name__ == "__main__":
         "details": {"severity": "INFO", "category": ["foo", "bar"]},
     }
 
-    splunk_hec.send_event(event_data, source="python-app", sourcetype="python-app-logs")
+    splunk_hec.send_events_batch(
+        event_data, source="python-app", sourcetype="python-app-logs"
+    )
