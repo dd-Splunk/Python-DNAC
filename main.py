@@ -18,19 +18,19 @@ def main():
         "/dna/intent/api/v1/device-health",
         splunk_hec,
         DNAC_HOST,
-        "cisco:dnac:device_health",
+        "cisco:dnac:devicehealth",
     )
     get_and_send_data(
         "/dna/intent/api/v1/client-health",
         splunk_hec,
         DNAC_HOST,
-        "cisco:dnac:client_health",
+        "cisco:dnac:clienthealth",
     )
     get_and_send_data(
         "/dna/intent/api/v1/network-device",
         splunk_hec,
         DNAC_HOST,
-        "cisco:dnac:network_devices",
+        "cisco:dnac:networkhealth",
     )
 
 

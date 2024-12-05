@@ -18,3 +18,9 @@ SPLUNK_USERNAME = <username>>
 SPLUNK_PASSWORD = <password>
 SPLUNK_HEC_TOKEN = <HEC token>
 ````
+
+## Splunkbase apps required
+
+- Cisco add-on (7538)
+- Cisco App (7539)
+- Config Explorer (4353)
