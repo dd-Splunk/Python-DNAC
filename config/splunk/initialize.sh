@@ -4,6 +4,13 @@ DNAC_HOST="https://${DNAC_HOST}"
 DNAC_USER="DNAC_Administrator"
 BASE_URL="https://${SPLUNK_HOST}:8089/servicesNS/-/TA_cisco_catalyst"
 
+echo "Disable ssl_verify in settings"
+curl -k -s -u ${SPLUNK_USERNAME}:${SPLUNK_PASSWORD} \
+    -L "${BASE_URL}/TA_cisco_catalyst_settings/additional_parameters" \
+    -H "Content-Type: application/x-www-form-urlencoded" \
+    -H "Accept: application/json" \
+    -d "verify_ssl=FALSE"
+
 echo "Create account"
 curl -k -s -u ${SPLUNK_USERNAME}:${SPLUNK_PASSWORD} \
     -L "${BASE_URL}/TA_cisco_catalyst_account" \
