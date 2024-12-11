@@ -11,6 +11,8 @@ services:
       - SPLUNK_APPS_URL=https://splunkbase.splunk.com/app/4353/release/1.7.16/download,https://splunkbase.splunk.com/app/7538/release/1.1.0/download,https://splunkbase.splunk.com/app/7539/release/1.1.0/download
       - SPLUNK_HEC_TOKEN
       - TZ=${TZ:-Europe/Brussels}
+    volumes:
+      - ./patch/props.conf:/opt/splunk/etc/apps/TA_cisco_catalyst/local/props.conf
     ports:
       - "8000:8000"
       - "8088:8088"
