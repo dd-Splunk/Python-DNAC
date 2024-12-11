@@ -32,7 +32,12 @@ def main():
         DNAC_HOST,
         "cisco:dnac:networkhealth",
     )
-
+    get_and_send_data(
+        "/dna/intent/api/v1/compliance",
+        splunk_hec,
+        DNAC_HOST,
+        "cisco:dnac:compliance",
+    )
 
 if __name__ == "__main__":
     main()
