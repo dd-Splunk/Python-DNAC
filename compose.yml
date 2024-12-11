@@ -15,3 +15,20 @@ services:
       - "8000:8000"
       - "8088:8088"
       - "8089:8089"
+
+  splunk-config:
+    image: curlimages/curl:latest # Use the official curl image
+    environment:
+      - SPLUNK_HOST=splunk
+      - SPLUNK_USERNAME=admin
+      - SPLUNK_PASSWORD
+      - DNAC_HOST
+      - DNAC_USERNAME
+      - DNAC_PASSWORD
+      - TZ=${TZ:-Europe/Brussels}
+    depends_on:
+      splunk:
+        condition: service_healthy
+    volumes:
+      - ./config/splunk:/config
+    entrypoint: ["/bin/sh", "/config/initialize.sh"]
