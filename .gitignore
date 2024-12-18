@@ -203,4 +203,4 @@ pyvenv.cfg
 pip-selfcheck.json
 
 # Splunk
-.spl
+*.spl
