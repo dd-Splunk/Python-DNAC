@@ -8,11 +8,13 @@ services:
       - SPLUNK_PASSWORD
       - SPLUNKBASE_USERNAME=${SPLUNKBASE_USERNAME}@splunk.com
       - SPLUNKBASE_PASSWORD
-      - SPLUNK_APPS_URL=https://splunkbase.splunk.com/app/4353/release/1.7.16/download,https://splunkbase.splunk.com/app/7538/release/1.1.0/download,https://splunkbase.splunk.com/app/7539/release/1.1.0/download
+      # - SPLUNK_APPS_URL=https://splunkbase.splunk.com/app/4353/release/1.7.16/download,https://splunkbase.splunk.com/app/7538/release/1.1.0/download,https://splunkbase.splunk.com/app/7539/release/1.1.0/download
+      - SPLUNK_APPS_URL=https://splunkbase.splunk.com/app/4353/release/1.7.16/download,https://splunkbase.splunk.com/app/7539/release/1.1.0/download,/tmp/config/splunk/TA_cisco_catalyst-D-1.1.1-3.spl
       - SPLUNK_HEC_TOKEN
       - TZ=${TZ:-Europe/Brussels}
     volumes:
-      - ./patch/props.conf:/opt/splunk/etc/apps/TA_cisco_catalyst/local/props.conf
+      # - ./patch/props.conf:/opt/splunk/etc/apps/TA_cisco_catalyst/local/props.conf
+      - ./config/splunk/:/tmp/config/splunk/
     ports:
       - "8000:8000"
       - "8088:8088"
