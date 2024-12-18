@@ -1,8 +1,22 @@
 #!/bin/bash
 echo "Initialize the Catalyst add-on"
+
+BASE_URL="https://${SPLUNK_HOST}:8089/servicesNS/-/TA_cisco_catalyst"
 DNAC_HOST="https://${DNAC_HOST}"
 DNAC_USER="DNAC_Administrator"
-BASE_URL="https://${SPLUNK_HOST}:8089/servicesNS/-/TA_cisco_catalyst"
+INDEX_NAME="dnac"
+
+echo "Create specific index: ${INDEX_NAME}"
+curl -k -s -u ${SPLUNK_USERNAME}:${SPLUNK_PASSWORD} \
+    -L "${BASE_URL}/data/indexes" \
+    -H "Content-Type: application/x-www-form-urlencoded" \
+    -H "Accept: application/json" \
+    -d "datatype=event" \
+    -d "name=${INDEX_NAME}" \
+    -d "coldPath=\$SPLUNK_DB/${INDEX_NAME}/colddb" \
+    -d "homePath=\$SPLUNK_DB/${INDEX_NAME}/db" \
+    -d "maxTotalDataSizeMB=512000" \
+    -d "thawedPath=\$SPLUNK_DB/${INDEX_NAME}/thaweddb"
 
 echo "Disable ssl_verify in settings"
 curl -k -s -u ${SPLUNK_USERNAME}:${SPLUNK_PASSWORD} \
@@ -28,7 +42,7 @@ curl -k -s -u ${SPLUNK_USERNAME}:${SPLUNK_PASSWORD} \
     -H "Accept: application/json" \
     -d "name=dnac_client_health" \
     -d "interval=300" \
-    -d "index=default" \
+    -d "index=${INDEX_NAME}" \
     -d "cisco_dna_center_host=${DNAC_HOST}" \
     -d "cisco_dna_center_account=${DNAC_USER}"
 
@@ -39,7 +53,7 @@ curl -k -s -u ${SPLUNK_USERNAME}:${SPLUNK_PASSWORD} \
     -H "Accept: application/json" \
     -d "name=dnac_compliance" \
     -d "interval=900" \
-    -d "index=default" \
+    -d "index=${INDEX_NAME}" \
     -d "cisco_dna_center_host=${DNAC_HOST}" \
     -d "cisco_dna_center_account=${DNAC_USER}"
 
@@ -50,7 +64,7 @@ curl -k -s -u ${SPLUNK_USERNAME}:${SPLUNK_PASSWORD} \
     -H "Accept: application/json" \
     -d "name=dnac_device_health" \
     -d "interval=300" \
-    -d "index=default" \
+    -d "index=${INDEX_NAME}" \
     -d "cisco_dna_center_host=${DNAC_HOST}" \
     -d "cisco_dna_center_account=${DNAC_USER}"
 
@@ -61,7 +75,7 @@ curl -k -s -u ${SPLUNK_USERNAME}:${SPLUNK_PASSWORD} \
     -H "Accept: application/json" \
     -d "name=dnac_issue" \
     -d "interval=900" \
-    -d "index=default" \
+    -d "index=${INDEX_NAME}" \
     -d "cisco_dna_center_host=${DNAC_HOST}" \
     -d "cisco_dna_center_account=${DNAC_USER}"
 
@@ -72,7 +86,7 @@ curl -k -s -u ${SPLUNK_USERNAME}:${SPLUNK_PASSWORD} \
     -H "Accept: application/json" \
     -d "name=dnac_network_health" \
     -d "interval=300" \
-    -d "index=default" \
+    -d "index=${INDEX_NAME}" \
     -d "cisco_dna_center_host=${DNAC_HOST}" \
     -d "cisco_dna_center_account=${DNAC_USER}"
 
@@ -83,7 +97,7 @@ curl -k -s -u ${SPLUNK_USERNAME}:${SPLUNK_PASSWORD} \
     -H "Accept: application/json" \
     -d "name=dnac_security_advisory" \
     -d "interval=3600" \
-    -d "index=default" \
+    -d "index=${INDEX_NAME}" \
     -d "cisco_dna_center_host=${DNAC_HOST}" \
     -d "cisco_dna_center_account=${DNAC_USER}"
 
