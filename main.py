@@ -15,21 +15,22 @@ def main():
 
     # Load DNAC details
     dnac_connection = load_connection_details()
-    dnac_host = dnac_connection["dnac_host"]
+    source = dnac_connection["dnac_host"]
 
-    # Define the list of endpoints and their corresponding source and sourcetype
-    api_base = "/dna/intent/api/v1"
+    # Define the common base URL for the API calls
+    base_url = "/dna/intent/api/v1"
+
+    # Define the list of endpoints and their corresponding sourcetype
     endpoints = [
-        (f"{api_base}/device-health", dnac_host, "cisco:dnac:devicehealth"),
-        (f"{api_base}/client-health", dnac_host, "cisco:dnac:clienthealth"),
-        (f"{api_base}/network-device", dnac_host, "cisco:dnac:networkhealth"),
-        (f"{api_base}/compliance", dnac_host, "cisco:dnac:compliance"),
+        (f"{base_url}/device-health", "cisco:dnac:devicehealth"),
+        (f"{base_url}/client-health", "cisco:dnac:clienthealth"),
+        (f"{base_url}/network-device", "cisco:dnac:networkhealth"),
+        (f"{base_url}/compliance", "cisco:dnac:compliance")
     ]
 
     # Call the individual APIs and send the results to Splunk
-    for endpoint, source, sourcetype in endpoints:
+    for endpoint, sourcetype in endpoints:
         get_and_send_data(dnac_connection, endpoint, splunk_hec, source, sourcetype)
-
 
 if __name__ == "__main__":
     main()
