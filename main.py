@@ -15,36 +15,19 @@ def main():
 
     # Load DNAC details
     dnac_connection = load_connection_details()
+    dnac_host = dnac_connection["dnac_host"]
+
+    # Define the list of endpoints and their corresponding source and sourcetype
+    endpoints = [
+        ("/dna/intent/api/v1/device-health", dnac_host, "cisco:dnac:devicehealth"),
+        ("/dna/intent/api/v1/client-health", dnac_host, "cisco:dnac:clienthealth"),
+        ("/dna/intent/api/v1/network-device", dnac_host, "cisco:dnac:networkhealth"),
+        ("/dna/intent/api/v1/compliance", dnac_host, "cisco:dnac:compliance"),
+    ]
 
     # Call the individual APIs and send the results to Splunk
-    get_and_send_data(
-        dnac_connection,
-        "/dna/intent/api/v1/device-health",
-        splunk_hec,
-        dnac_connection["dnac_host"],
-        "cisco:dnac:devicehealth",
-    )
-    get_and_send_data(
-        dnac_connection,
-        "/dna/intent/api/v1/client-health",
-        splunk_hec,
-        dnac_connection["dnac_host"],
-        "cisco:dnac:clienthealth",
-    )
-    get_and_send_data(
-        dnac_connection,
-        "/dna/intent/api/v1/network-device",
-        splunk_hec,
-        dnac_connection["dnac_host"],
-        "cisco:dnac:networkhealth",
-    )
-    get_and_send_data(
-        dnac_connection,
-        "/dna/intent/api/v1/compliance",
-        splunk_hec,
-        dnac_connection["dnac_host"],
-        "cisco:dnac:compliance",
-    )
+    for endpoint, source, sourcetype in endpoints:
+        get_and_send_data(dnac_connection, endpoint, splunk_hec, source, sourcetype)
 
 
 if __name__ == "__main__":
