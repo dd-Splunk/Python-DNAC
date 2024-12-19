@@ -63,7 +63,9 @@ if __name__ == "__main__":
 
     dnac_connection = load_connection_details()
 
-    network_device_client = DNACClient(dnac_connection, "/dna/intent/api/v1/network-device")
+    network_device_client = DNACClient(
+        dnac_connection, "/dna/intent/api/v1/network-device"
+    )
     network_device_data = network_device_client.get_data()
     for item in network_device_data:
         event = json.dumps(item, indent=None, separators=(",", ":"))
